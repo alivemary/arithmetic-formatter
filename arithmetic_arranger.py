@@ -13,43 +13,40 @@ def arithmetic_arranger(problems, show_result=False):
             raise Error("Operator must be '+' or '-'")
         return operator
 
-    def split_problem(problem):
+    def split_and_format_problem(problem):
         splited = problem.split()
         if len(problems) > 5:
             raise Error("Too many problems")
         operator = valid_operator(splited[1])
         num1 = clean_number(splited[0])
         num2 = clean_number(splited[2])
-        result = num1 + num2 if operator == "+" else num1 - num2
-        string_length = max(len(splited[0]), len(splited[2]))
-        formatted_num1 = splited[0].rjust(string_length + 2)
-        formatted_num2 = operator + " " + splited[2].rjust(string_length)
-        separator = "-" * (string_length + 2)
-        formatted_result = str(result).rjust(string_length + 2)
-        return (formatted_num1, formatted_num2, separator, formatted_result)
+        string_length = max(len(str(num1)), len(str(num2)))
+        formatted = dict()
+        formatted["first_number"] = str(num1).rjust(string_length + 2)
+        formatted["second_number"] = operator + " " + str(num2).rjust(string_length)
+        formatted["separator"] = "-" * (string_length + 2)
+        if show_result:
+            result = num1 + num2 if operator == "+" else num1 - num2
+            formatted["result"] = str(result).rjust(string_length + 2)
 
-    arranged_problems = "some"
+        return formatted
+
+    def combine_strings(problem, strings):
+        splitted_problem = split_and_format_problem(problem)
+        keys = ["first_number", "second_number", "separator"]
+        if show_result:
+            keys.append("result")
+        for key in keys:
+            strings[key] = strings.get(key, []) + [splitted_problem[key]]
+        return strings
 
     try:
-        map = [split_problem(problem) for problem in problems]
-        first = ""
-        second = ""
-        third = ""
-        forth = ""
-        for string1, string2, string3, string4 in map:
-            first += string1 + "    "
-            second += string2 + "    "
-            third += string3 + "    "
-            forth += string4 + "    "
-        arranged_problems = (
-            first.rstrip() + "\n" + second.rstrip() + "\n" + third.rstrip()
-        )
-        if show_result:
-            arranged_problems += "\n" + forth.rstrip()
+        my_dict = dict()
+        for problem in problems:
+            my_dict = combine_strings(problem, my_dict)
+        return "\n".join(["    ".join(v) for v in my_dict.values()])
     except Error as e:
         return str(e)
-    print(arranged_problems)
-    return arranged_problems
 
 
 class Error(Exception):
