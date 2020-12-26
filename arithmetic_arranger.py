@@ -14,12 +14,12 @@ def arithmetic_arranger(problems, show_result=False):
         return operator
 
     def split_and_format_problem(problem):
-        splited = problem.split()
         if len(problems) > 5:
             raise Error("Too many problems")
-        operator = valid_operator(splited[1])
-        num1 = clean_number(splited[0])
-        num2 = clean_number(splited[2])
+        [n1, sign, n2] = problem.split()
+        operator = valid_operator(sign)
+        num1 = clean_number(n1)
+        num2 = clean_number(n2)
         string_length = max(len(str(num1)), len(str(num2)))
         formatted = dict()
         formatted["first_number"] = str(num1).rjust(string_length + 2)
